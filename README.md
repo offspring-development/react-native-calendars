@@ -99,8 +99,6 @@ LocaleConfig.defaultLocale = 'fr';
   firstDay={1}
   // Hide day names. Default = false
   hideDayNames={true}
-  // Show week numbers to the left. Default = false
-  showWeekNumbers={true}
 />
 ```
 
@@ -118,39 +116,14 @@ Dot marking
 <Calendar
   // Collection of dates that have to be marked. Default = {}
   markedDates={{
-    '2012-05-16': {selected: true, marked: true, selectedColor: 'blue'},
+    '2012-05-16': {selected: true, marked: true},
     '2012-05-17': {marked: true},
-    '2012-05-18': {marked: true, dotColor: 'red', activeOpacity: 0},
-    '2012-05-19': {disabled: true, disableTouchEvent: true}
+    '2012-05-18': {disabled: true}
   }}
 />
 ```
 
-You can customise a dot color for each day independently.
-
-Multi-Dot marking
-
-<kbd>
- <img height=50 src="https://github.com/wix-private/wix-react-native-calendar/blob/master/demo/marking4.png?raw=true">
-</kbd>
-
-Use markingType = 'multi-dot' if you want to display more than one dot. Both the Calendar and CalendarList control support multiple dots by using 'dots' array in markedDates. The property 'color' is mandatory while 'key' and 'selectedColor' are optional. If key is omitted then the array index is used as key. If selectedColor is omitted then 'color' will be used for selected dates.
-```javascript
-const vacation = {key:'vacation', color: 'red', selectedColor: 'blue'};
-const massage = {key:'massage', color: 'blue', selectedColor: 'blue'};
-const workout = {key:'workout', color: 'green'};
-
-<Calendar
-  markedDates={{
-    '2017-10-25': {dots: [vacation, massage, workout], selected: true},
-    '2017-10-26': {dots: [massage, workout], disabled: true},
-  }},
-  markingType={'multi-dot'}
-/>
-```
-
-
-Period marking
+Interval marking
 
 <kbd>
   <img height=50 src="https://github.com/wix-private/wix-react-native-calendar/blob/master/demo/marking2.png?raw=true">
@@ -164,13 +137,13 @@ Period marking
 <Calendar
   // Collection of dates that have to be colored in a special way. Default = {}
    markedDates={
-    {'2012-05-20': {textColor: 'green'},
-     '2012-05-22': {startingDay: true, color: 'green'},
-     '2012-05-23': {selected: true, endingDay: true, color: 'green', textColor: 'gray'},
-     '2012-05-04': {disabled: true, startingDay: true, color: 'green', endingDay: true}
+    {'2012-05-20': [{textColor: 'green'}],
+     '2012-05-22': [{startingDay: true, color: 'green'}],
+     '2012-05-23': [{endingDay: true, color: 'green', textColor: 'gray'}],
+     '2012-05-04': [{startingDay: true, color: 'green'}, {endingDay: true, color: 'green'}]
     }}
-  // Date marking style [simple/period/multi-dot]. Default = 'simple'
-  markingType={'period'}
+  // Date marking style [simple/interactive]. Default = 'simple'
+  markingType={'interactive'}
 />
 ```
 
@@ -218,55 +191,6 @@ The loading indicator next to month name will be displayed if `<Calendar />` has
 />
 ```
 
-#### Advanced styling
-
-If you want to have complete control over calendar styles you can do it by overriding default style.js files. For example, if you want to override calendar header style first you have to find stylesheet id for this file:
-
-https://github.com/wix/react-native-calendars/blob/master/src/calendar/header/style.js#L4
-
-In this case it is 'stylesheet.calendar.header'. Next you can add overriding stylesheet to your theme with this id.
-
-https://github.com/wix/react-native-calendars/blob/master/example/src/screens/calendars.js#L56
-
-```javascript
-theme={{
-  arrowColor: 'white',
-  'stylesheet.calendar.header': {
-    week: {
-      marginTop: 5,
-      flexDirection: 'row',
-      justifyContent: 'space-between'
-    }
-  }
-}}
-```
-
-**Disclaimer**: issues that arise because something breaks after using stylesheet override will not be supported. Use this option at your own risk.
-
-#### Overriding day component
-
-If you need custom functionality not supported by current day component implementations you can pass your own custom day
-component to the calendar.
-
-```javascript
-<Calendar
-  style={[styles.calendar, {height: 300}]}
-  dayComponent={({date, state}) => {
-    return (<View style={{flex: 1}}><Text style={{textAlign: 'center', color: state === 'disabled' ? 'gray' : 'black'}}>{date.day}</Text></View>);
-  }}
-/>
-```
-
-The dayComponent prop has to receive a RN component or function that receive props. The day component will receive such props:
-
-* state - disabled if the day should be disabled (this is decided by base calendar component)
-* marking - markedDates value for this day
-* date - the date object representing this day
-
-**Tip:** Don't forget to implement shouldComponentUpdate for your custom day component to make calendar perform better
-
-If you implement an awesome day component please make a PR so that other people could use it :)
-
 ### CalendarList
 
 <kbd>
@@ -285,8 +209,6 @@ If you implement an awesome day component please make a PR so that other people 
   futureScrollRange={50}
   // Enable or disable scrolling of calendar list
   scrollEnabled={true}
-  // Enable or disable vertical scroll indicator. Default = false
-  showScrollIndicator={true}
   ...calendarParams
 />
 ```
@@ -311,8 +233,6 @@ An advanced agenda component that can display interactive listings for calendar 
     }}
   // callback that gets called when items for a certain month should be loaded (month became visible)
   loadItemsForMonth={(month) => {console.log('trigger items loading')}}
-  // callback that fires when the calendar is opened or closed
-  onCalendarToggled={(calendarOpened) => {console.log(calendarOpened)}}
   // callback that gets called on day press
   onDayPress={(day)=>{console.log('day pressed')}}
   // callback that gets called when day changes while scrolling agenda list
@@ -335,8 +255,6 @@ An advanced agenda component that can display interactive listings for calendar 
   renderEmptyDate={() => {return (<View />);}}
   // specify how agenda knob should look like
   renderKnob={() => {return (<View />);}}
-  // specify what should be rendered instead of ActivityIndicator
-  renderEmptyData = {() => {return (<View />);}}
   // specify your item comparison function for increased performance
   rowHasChanged={(r1, r2) => {return r1.text !== r2.text}}
   // Hide knob button. Default = false
